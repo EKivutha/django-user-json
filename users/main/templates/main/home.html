@@ -1,0 +1,25 @@
+{% block content %}
+  
+
+    
+    <table>
+        <tr>
+            <th>id</th>
+          <th>name</th>
+          <th>address</th>
+          <th>age</th>
+        </tr>
+        {% for tut in data %}
+        <tr>
+            <td>{{tut.id}}</td>
+          <td>{{tut.fields.name}}</td>
+          <td>{{tut.fields.address}}</td>
+          <td>{{tut.fields.age}}</td>
+        </tr>
+        {% endfor %}
+      </table> 
+    <br><br>
+
+
+
+{% endblock %}
