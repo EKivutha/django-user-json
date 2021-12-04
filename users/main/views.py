@@ -33,3 +33,11 @@ def TheModelView(request):
                   context = {
    'data': data
     })
+    return 
+
+@csrf_exempt
+def getName(request, name):
+    with open(​'/home/ezz/Documents/gitprojects/crediation/django_user/users/main/fixtures/people.json') as jsonfile:
+        json_data = json.load(json_file.read())
+        json_data = filter(lambda​ ​x​: ​x​[​"name"​] ​==​ ​str​(​name​), ​json_data)
+    return Response(json_data)
