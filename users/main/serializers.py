@@ -1,8 +1,12 @@
-from rest_framework_json_api import serializers
-from .models import User
+from rest_framework import serializers
+#from .models import User
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ('name','age', 'address')
+class UserSerializer(serializers.Serializer):
+   index = Serializers.IntegerFiled()
+   isActive = Serializers.BooleanFiled()
+   picture = Serializers.CharFiled()
+   age = Serializers.IntegerFiled()
+   gender = Serializers.CharFiled()
+   email = Serializers.CharField()
+   phome = Serializers.CharField()
 

@@ -1,43 +1,63 @@
-from django.http import response
-from django.http.response import JsonResponse
-from django.shortcuts import render
-from .models import User
-from .serializers import UserSerializer
-import requests
-from rest_framework import viewsets
-from django.shortcuts import render
-from django.http import JsonResponse
-# from themodels.models import Todo
-from django.core import serializers
-from django.views.decorators.csrf import csrf_exempt
+#django imports 
+from django.shortcuts import render # noqa
+
 import json
+from rest_framework import viewsets
+
+
+#rest framework imports 
+from rest_framework.viewsets import GenericViewSet
+from rest_framework.response import Response
+from rest_framework import status,filters
+
+#local imports
+
+from .serializers import UserSerializer
+
+
+# Create your views here.
+
+
+"""
+  This is a function that reads a json file recursively, closes the file  and returns the content  
+"""
 
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    
-    queryset = User.objects.all()
+def read_file(path):
+    file = open(path, "r")
+    data = file.read()
+    file.close()
+    return data
+
+""" 
+"""
+def read_json():
+    return json.loads(read_file('users.json'))
+
+
+class UserViewSet(viewsets.GenericViewSet):
     serializer_class = UserSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = [ 'email']
+    """
+     This is a custom get queryset method that loads our content from the json file
+    """
+    def get_queryset(self,*args,**kwargs):
+       
+        params = self.request.query_params.get('search')
+        
+        if params:
+            res = [ i for i in read_json() if i['email'] == params ]
+            return res
 
+        return read_json()
 
-@csrf_exempt ## To exempt from default requirement for CSRF tokens to use postman
-def TheModelView(request):
-
-    if (request.method == "GET"):
-        with open('/home/ezz/Documents/gitprojects/crediation/django_user/users/main/fixtures/people.json') as f:
-            data = json.load(f) 
-        # Turn the JSON data into a dict and send as JSON response
-        # return JsonResponse(data, safe=False)
-        return render(request = request,
-                  template_name='main/home.html', 
-                  context = {
-   'data': data
-    })
-    return 
-
-@csrf_exempt
-def getName(request, name):
-    with open(​'/home/ezz/Documents/gitprojects/crediation/django_user/users/main/fixtures/people.json') as jsonfile:
-        json_data = json.load(json_file.read())
-        json_data = filter(lambda​ ​x​: ​x​[​"name"​] ​==​ ​str​(​name​), ​json_data)
-    return Response(json_data)
+    def list(self,request):
+        if(len(self.get_queryset()) > 0):
+            serializer = self.get_serializer(self.get_queryset(),many=True)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        return  Response(
+            {"Not Found": "Content Not Found, kindly try with a different search term "},
+            status=status.HTTP_404_NOT_FOUND
+        )

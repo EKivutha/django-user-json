@@ -9,7 +9,6 @@ router.register(r'user', views.UserViewSet)
 app_name = 'main'  # here for namespacing of urls.
 
 urlpatterns = [
-   path('home/',include(router.urls)),
-   path('', views.TheModelView),
-   path('/name', views.getName),
+   path('',include(router.urls)),
+   
 ]
